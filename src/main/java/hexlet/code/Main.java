@@ -1,4 +1,5 @@
 package hexlet.code;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -8,16 +9,17 @@ import java.util.List;
 
 public class Main {
 
+    static final String ID = "id";
     static final String NAME = "name";
     static final String DESC = "desc";
     static final String STATUS = "status";
 
 
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws Exception {
         System.out.println("Welcome to Task manager!");
 
-        List<Map<String, String>> tasks = new ArrayList<>();
+        Storage storage = new Storage();
+        Scanner scanner = new Scanner(System.in);
 
 
         while (true) {
@@ -27,18 +29,16 @@ public class Main {
             System.out.println("0 - Exit");
             System.out.println(" >");
 
-            Scanner scanner = new Scanner(System.in);
             String userInput = scanner.nextLine();
-
             switch (userInput) {
                 case "1" -> {
                     System.out.println("All tasks");
+                    List<Map<String, String>> tasks = storage.getAll();
                     if (tasks.isEmpty()) {
                         System.out.println("Tasks absent");
                     } else {
-                        for (int i = 0; i < tasks.size(); i++) {
-                            Map<String, String> task = tasks.get(i);
-                            System.out.println("№ " + (i + 1));
+                        for (Map<String, String> task : tasks) {
+                            System.out.println("№ " + task.get(ID));
                             System.out.println("Name: " + task.get(NAME));
                             System.out.println("Descrition: " + task.get(DESC));
                             System.out.println("Status: " + task.get(STATUS));
@@ -60,21 +60,20 @@ public class Main {
                     System.out.print("Enter task status: ");
                     String taskStatus = scanner.nextLine();
                     task.put(STATUS, taskStatus);
-                    tasks.add(task);
+                    storage.addNew(task);
                 }
 
                 case "3" -> {
                     System.out.println("0task update");
-                    if (tasks.isEmpty()) {
+                    if (storage.getAll().isEmpty()) {
                         System.out.println("Tasks absent");
                     } else {
                         System.out.print("Enter task number update : ");
                         int taskId = scanner.nextInt();
                         scanner.nextLine();
-                        Map<String, String> task = tasks.get(taskId - 1);
                         System.out.print("Enter task status: ");
                         String taskStatus = scanner.nextLine();
-                        task.put(STATUS, taskStatus);
+                        storage.changeStatus(taskId, taskStatus);
 
                     }
 
@@ -82,6 +81,7 @@ public class Main {
 
                 case "0" -> {
                     System.out.println("Exit");
+                    scanner.close();
                     return;
                 }
                 default -> System.out.println("Command not supported");
